@@ -1,5 +1,8 @@
 <template>
-	<div>HELLO WORLD</div>
+	<div>
+        <div style="background: url('/src/assets/images/test.jpeg') no-repeat;width: 200px;height:200px"></div>   
+        <img src="/src/assets/images/test.jpeg">
+    </div>
 </template>
 
 <script>

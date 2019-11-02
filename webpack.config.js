@@ -20,6 +20,7 @@ const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 // 引入 webpack-deep-scope-plugin 优化
 const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin').default;
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     // 入口文件
     entry: {
@@ -76,8 +77,17 @@ module.exports = {
                 use: ['style-loader', 'css-loader','less-loader'],
             },
             {
-                test: /\.(png|jpg)$/,
-                use: ['happypack/loader?id=image']
+                test: /\.(png|jpg|jpeg|gif)$/,
+                use: [{
+                    loader: "url-loader",
+                    options: {
+                        limit: 10, 
+                        name: "[name].[ext]",
+                        outputPath:"images/",//图片打包的出口
+                        publicPath:"images/"//打包后img标签src的根级路径
+                    }
+                }],
+
             },
             {
                 test: /\.js$/,
@@ -100,7 +110,7 @@ module.exports = {
     },
     devtool: 'cheap-module-eval-source-map',
     devServer: {
-        port: 8081,
+        port: 8089,
         host: '0.0.0.0',
         headers: {
             'X-foo': '112233'
@@ -135,13 +145,9 @@ module.exports = {
         }),
         new HappyPack({
             id: 'image',
-            loaders: [{
-                loader: require.resolve('url-loader'),
-                options: {
-                    limit: 10000,
-                    name: '[name].[ext]'
-                }
-            }]
+            loaders: [
+                {loader: require.resolve('url-loader')},
+            ]
         }),
         // 处理styl文件
         new HappyPack({
@@ -190,6 +196,7 @@ module.exports = {
             }
         }),
         new WebpackDeepScopeAnalysisPlugin(),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new CopyWebpackPlugin([{ from: '/src/assets/images', to: '/images' }])
     ]
 };
